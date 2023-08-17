@@ -1,7 +1,7 @@
 const fs = require('fs/promises')
 const listContacts = async () => {
   try {
-    const contacts = await fs.readFile("/contacts.json");
+    const contacts = await fs.readFile("./contacts.json");
     const parsedContacts = JSON.parse(contacts);
     const formattedContacts = parsedContacts.map((contact) => {
       return {
