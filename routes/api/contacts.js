@@ -5,7 +5,7 @@ const router = express.Router()
 const { listContacts } = require("../../models/contacts");
 
 router.get('/', async (req, res, next) => {
-const data = listContacts("../../models/contacts.json")
+const data = listContacts();
   res.json({ 
     status: 'success',
     code: 200,
