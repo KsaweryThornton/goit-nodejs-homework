@@ -28,8 +28,9 @@ router.get("/", async (req, res, next) => {
         contacts,
       },
     });
-  } catch (err) {
-    next(err);
+  } catch (error) {
+  console.error(error);
+  res.status(500).json({ error: "Unknow error occured." })
   }
 });
 
@@ -42,37 +43,39 @@ router.get("/:contactId", async (req, res, next) => {
       code: 200,
       data: { foundContact },
     });
-  } catch (err) {
-    if (err.message === "Contact not found") {
+  } catch (error) {
+    if (error.message === "Contact not found") {
       res.status(404).json({ message: "Not found" });
     } else {
-      next(err);
+        console.error(error);
+        res.status(500).json({ error: "Unknow error occured." })
+        }
     }
   }
-});
+);
 
 router.post("/", async (req, res, next) => {
   try {
-    const { name, email, phone } = req.body;
-    const newContact = await addContact({ name, email, phone });
     const validatedBody = responseSchema.validate(req.body);
     if (validatedBody.error) {
-      res.status(400).json({ message: "missing required name - field" });
-    } else {
-      res.json({
+      return res.status(400).json({ message: validatedBody.error.message });
+    }    
+    const newContact = await addContact(req.body);
+      res.status(201).json({
         status: "success",
         code: 201,
         data: { newContact },
       });
-    }
-  } catch (error) {
-    next(error);
+    } catch (error) {
+    console.error(error);
+    res.status(500).json({error: "Unknow error occured."})
   }
 });
 
 router.delete("/:contactId", async (req, res, next) => {
   const { contactId } = req.params;
-  const result = await removeContact(contactId);
+  try {
+    const result = await removeContact(contactId);
   if (!result.success) {
     res.status(404).json({ message: "Not found" });
     return;
@@ -81,33 +84,29 @@ router.delete("/:contactId", async (req, res, next) => {
     message: "Contact deleted",
     code: 200,
   });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Unknow error occured." })
+    }
 });
 
 router.put("/:contactId", async (req, res, next) => {
   const { contactId } = req.params;
+  const newContactData = req.body;
   try {
-    const { error } = responseSchema.validate(req.body);
-    if (error) {
-      res.status(400).json({ message: "Missing fields" });
-      return;
-    }
-    const { name, email, phone } = req.body;
-    const updatedContact = await updateContact(contactId, {
-      name,
-      email,
-      phone,
-    });
-    if (!updatedContact) {
-      res.status(404).json({ message: "Not found" });
-      return;
-    }
+    const updatedContact = await updateContact(contactId, newContactData);
     res.json({
       status: "success",
       code: 200,
       data: { updatedContact },
     });
   } catch (error) {
-    next(error);
+    if (error.message === "Contact not found") {
+      res.status(404).json({ message: "Not found" });
+    } else {
+        console.error(error);
+        res.status(500).json({ error: "Unknow error occured." })
+        }
   }
 });
 
