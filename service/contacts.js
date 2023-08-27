@@ -9,8 +9,6 @@ const getContactById = async (contactId) => {
   const contact = await Contact.findOne({ _id: contactId });
   if (contact) {
     return contact;
-  } else {
-    throw new Error("Contact not found");
   }
 };
 
@@ -21,11 +19,7 @@ const addContact = async (body) => {
 
 const removeContact = async (contactId) => {
   const result = await Contact.deleteOne({ _id: contactId });
-  if (result.deletedCount === 1) {
-    return { success: true };
-  } else {
-    return { success: false };
-  }
+  return result;
 };
 
 const updateContact = async (contactId, newContactData) => {
@@ -34,17 +28,11 @@ const updateContact = async (contactId, newContactData) => {
     newContactData,
     { new: true }
   );
-  if (!updatedContact) {
-    throw new Error("Contact not found");
-  }
   return updatedContact;
 };
 
 const addContactToFavorite = async (contactId) => {
   const contact = await Contact.findOne({ _id: contactId });
-  if (!contact) {
-    throw new Error("Missing field favorite");
-  }
   const updatedContact = await Contact.findByIdAndUpdate(
     contactId,
     { favorite: !contact.favorite },
