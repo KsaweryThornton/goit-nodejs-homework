@@ -26,11 +26,10 @@ const updateContact = async (contactId, userId, newContactData) => {
 const addContactToFavorite = async (contactId, userId) => {
   const contact = await Contact.findOne({ _id: contactId, owner: userId });
   if (contact) {
-  contact.favorite = !contact.favorite;
-  await contact.save();
-  return contact;
+    contact.favorite = !contact.favorite;
+    await contact.save();
+    return contact;
   }
-  
 };
 
 const removeContact = async (contactId, userId) => {

@@ -36,7 +36,7 @@ const signIn = async (req, res) => {
       data: "Bad request",
       status: "error",
       code: 400,
-      message: "Incorrect login or password."
+      message: "Incorrect login or password.",
     });
   }
   const payload = {
@@ -55,31 +55,31 @@ const signIn = async (req, res) => {
 };
 
 const signOut = async (req, res) => {
-    const token = null;
-    res.json({
-      status: "success",
-      code: 204,
-      message: "You have been logged out.",
-      data: {
-      token
-      }
-    });
+  const token = null;
+  res.json({
+    status: "success",
+    code: 204,
+    message: "You have been logged out.",
+    data: {
+      token,
+    },
+  });
 };
 
-const userList = async (req,res) => {
+const userList = async (req, res) => {
   const { username } = req.user;
-    res.json({
-      status: 'success',
-      code: 200,
-      data: {
-        message: `Authorization was successful: ${username}`,
-      },
-    })
-}
+  res.json({
+    status: "success",
+    code: 200,
+    data: {
+      message: `Authorization was successful: ${username}`,
+    },
+  });
+};
 
 module.exports = {
   signIn,
   signOut,
   signUp,
-  userList
+  userList,
 };
