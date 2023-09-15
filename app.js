@@ -1,10 +1,12 @@
 const express = require("express");
 const app = express();
+
 const contactsRouter = require("./routes/api/contacts");
 const authRouter = require("./routes/api/auth");
 
 app.use(express.json());
 require("./config/passport");
+app.use(express.static('./public/avatars'));
 
 app.use("/api/contacts", contactsRouter);
 app.use("/api/auth/users", authRouter);
