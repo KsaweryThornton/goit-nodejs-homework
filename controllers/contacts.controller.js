@@ -30,14 +30,18 @@ const get = async (req, res) => {
   try {
     const { query, user } = req;
     const contacts = await listContacts({ ...query, owner: user._id });
-    res.json({
-      status: "success",
-      code: 200,
-      data: { contacts },
+    res.status(200).json({
+      status: "OK",
+      data: {
+        contacts: contacts,
+      },
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Unknown error occurred." });
+    res.status(500).json({
+      status: "Internal Server Error",
+      error: "Unknown error occurred.",
+      message: error.message,
+    });
   }
 };
 
@@ -54,14 +58,16 @@ const getById = async (req, res) => {
       return res.status(404).json({ message: "Not found." });
     }
     const foundContact = await getContactById(id, user._id);
-    res.json({
-      status: "success",
-      code: 200,
-      data: { foundContact },
+    res.status(200).json({
+      status: "OK",
+      data: { contact: foundContact },
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Unknown error occurred." });
+    res.status(500).json({
+      status: "Internal Server Error",
+      error: "Unknown error occurred.",
+      message: error.message,
+    });
   }
 };
 
@@ -74,13 +80,15 @@ const create = async (req, res) => {
     }
     const newContact = await addContact({ ...body, owner: user._id });
     res.status(201).json({
-      status: "success",
-      code: 201,
+      status: "Created",
       data: { contact: newContact },
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Unknown error occurred." });
+    res.status(500).json({
+      status: "Internal Server Error",
+      error: "Unknown error occurred.",
+      message: error.message,
+    });
   }
 };
 
@@ -90,25 +98,36 @@ const update = async (req, res) => {
   try {
     const validateId = idSchema.validate({ id: id });
     if (validateId.error) {
-      return res.status(400).json({ error: validateId.error.message });
+      return res.status(400).json({
+        status: "Bad Request",
+        error: validateId.error.message,
+      });
     }
     const contact = await Contact.findOne({ _id: id });
     if (!contact) {
-      return res.status(404).json({ message: "Not found." });
+      return res.status(404).json({
+        status: "Not found",
+        message: "Contact not found.",
+      });
     }
     const validatedBody = updateContactSchema.validate(body);
     if (validatedBody.error) {
-      return res.status(400).json({ message: validatedBody.error.message });
+      return res.status(400).json({
+        status: "Bad Request",
+        message: validatedBody.error.message,
+      });
     }
     const updatedContact = await updateContact(id, user._id, body);
-    res.json({
-      status: "success",
-      code: 200,
+    res.status(200).json({
+      status: "OK",
       data: { contact: updatedContact },
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Unknown error occurred." });
+    res.status(500).json({
+      status: "Internal Server Error",
+      error: "Unknown error occurred.",
+      message: error.message,
+    });
   }
 };
 
@@ -118,21 +137,29 @@ const favorite = async (req, res) => {
   try {
     const validateId = idSchema.validate({ id: id });
     if (validateId.error) {
-      return res.status(400).json({ error: validateId.error.message });
+      return res.status(400).json({
+        status: "Bad Request",
+        error: validateId.error.message,
+      });
     }
     const contact = await Contact.findOne({ _id: id });
     if (!contact) {
-      return res.status(404).json({ message: "Not found." });
+      return res.status(404).json({
+        status: "Not Found",
+        message: "Contact not found.",
+      });
     }
     const addToFavorite = await addContactToFavorite(id, user._id);
     res.status(201).json({
-      status: "success",
-      code: 201,
+      status: "Created",
       data: { contact: addToFavorite },
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Unknown error occurred." });
+    res.status(500).json({
+      status: "Internal Server Error",
+      error: "Unknown error occurred.",
+      message: error.message,
+    });
   }
 };
 
@@ -142,20 +169,29 @@ const remove = async (req, res) => {
     const { user } = req;
     const validateId = idSchema.validate({ id: id });
     if (validateId.error) {
-      return res.status(400).json({ error: validateId.error.message });
+      return res.status(400).json({
+        status: "Bad Request",
+        error: validateId.error.message,
+      });
     }
     const contact = await Contact.findOne({ _id: id });
     if (!contact) {
-      return res.status(404).json({ message: "Not found." });
+      return res.status(404).json({
+        status: "Not Found",
+        message: "Contact not found.",
+      });
     }
     await removeContact(id, user._id);
-    res.json({
+    res.status(200).json({
+      status: "OK",
       message: "Contact deleted.",
-      code: 200,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Unknown error occurred." });
+    res.status(500).json({
+      status: "Internal Server Error",
+      error: "Unknown error occurred.",
+      message: error.message,
+    });
   }
 };
 
